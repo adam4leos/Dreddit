@@ -1,5 +1,6 @@
+"use client"
 import React, { useState, ReactNode } from 'react';
-import { Web5StorageContext, IWeb5Storage } from '../contexts/Web5StorageContext';
+import { Web5StorageContext, IWeb5Storage } from '@/contexts/Web5StorageContext';
 
 interface Web5StorageProviderProps {
   children: ReactNode;

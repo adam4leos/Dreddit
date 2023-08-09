@@ -1,0 +1,19 @@
+.Header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 0 1rem;
+    width: 100%;
+    border-bottom: 1px solid #ffffff1a;
+    color: #F2F2F2;
+    background: #0b1416;
+}
+
+.Header__nav {
+    display: flex;
+    width: 100%;
+}
+
+.Header__logo-link {
+    padding: 0.5rem;
+}
