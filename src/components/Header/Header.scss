@@ -7,13 +7,14 @@
     border-bottom: 1px solid #ffffff1a;
     color: #F2F2F2;
     background: #0b1416;
-}
+    font-size: 2rem;
 
-.Header__nav {
-    display: flex;
-    width: 100%;
-}
+    &__nav {
+        display: flex;
+        width: 100%;
+    }
 
-.Header__logo-link {
-    padding: 0.5rem;
+    &__logo-link {
+        padding: 0.5rem;
+    }
 }

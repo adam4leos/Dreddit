@@ -4,15 +4,15 @@ import Link from 'next/link';
 import { IPost, PostsContext } from "@/contexts/PostsContext";
 import { timeSince } from "@/utils/timeSince";
 
-import './FeedPost.css';
+import './FeedPost.scss';
 
 interface IFeedPostProps {
     post: IPost;
-    
+
 };
 
-export const FeedPost = ({post}: IFeedPostProps) => {
-    const {record, id, title, content, author, subdreddit, dateCreated, commentCount, rating, contentType} = post;
+export const FeedPost = ({ post }: IFeedPostProps) => {
+    const { record, id, title, content, author, subdreddit, dateCreated, commentCount, rating, contentType } = post;
     const { updatePost } = useContext(PostsContext);
 
     const getPostedTime = (postCreationISO: string) => timeSince(new Date(postCreationISO));
@@ -29,18 +29,18 @@ export const FeedPost = ({post}: IFeedPostProps) => {
         });
 
         if (response?.status?.code === 202) {
-            updatePost(id, {rating: rating + change});
+            updatePost(id, { rating: rating + change });
         }
     };
 
-    console.log({record, id, title, content, author, subdreddit, dateCreated, commentCount, rating});
+    console.log({ record, id, title, content, author, subdreddit, dateCreated, commentCount, rating });
 
     return (
         <>
             <Link href={`/dr/${encodeURIComponent(subdreddit.id)}/comments/${encodeURIComponent(id)}`} className="FeedPost">
                 <div className="FeedPost__head">
                     <Link href={`/dr/${encodeURIComponent(subdreddit.id)}`} className="FeedPost__subdreddit-link">
-                        <span className="FeedPost__subdreddit-icon">I</span>
+                        <span className="FeedPost__subdreddit-icon">{subdreddit.title.slice(3, 4)}</span>
                         <span className="FeedPost__subdreddit-title">{subdreddit.title}</span>
                     </Link>
                     <span className="FeedPost__subreddit-link-separator">•</span>

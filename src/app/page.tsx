@@ -1,42 +1,18 @@
 "use client"
-import { useCallback, useContext, useEffect } from "react"
+import { Suspense, useCallback, useContext, useEffect, useState } from "react"
 import { Web5 } from '@tbd54566975/web5';
 
 import { Web5StorageContext } from "@/contexts/Web5StorageContext";
 import { PostsContext } from "@/contexts/PostsContext";
 import { Feed } from "@/components/Feed/Feed";
 import { NewPostButton } from "@/components/NewPostButton/NewPostButton";
-
-const dredditProtocol = {
-    'protocol': 'http://dreddit.xyz/protocol',
-    'types': {
-        'post': {
-            'schema': 'http://dreddit.xyz/schemas/post',
-            'dataFormats': [
-                'application/json'
-            ]
-        },
-    },
-    'structure': {
-        'post': {
-            '$actions': [
-                {
-                    'who': 'author',
-                    'of': 'post',
-                    'can': 'write'
-                },
-                {
-                    'who': 'anyone',
-                    'can': 'read'
-                }
-            ],
-        }
-    }
-};
+import { dredditProtocol, EDredditTypes } from "@/protocol";
+import { Spinner } from "@/components/Spinner/Spinner";
 
 export default function App() {
-  const { web5Storage, addToWeb5Storage } = useContext(Web5StorageContext);
+    const { web5Storage, addToWeb5Storage } = useContext(Web5StorageContext);
     const { posts, addPost } = useContext(PostsContext);
+    const [isLoading, setIsLoading] = useState(true);
 
     const createPosts = async () => {
         const aliceStorage = web5Storage?.get('alice');
@@ -60,7 +36,9 @@ export default function App() {
         const { record: alicePost1Record } = await aliceStorage.web5.dwn.records.write({
             data: JSON.stringify(alicePost1),
             message: {
-                schema: 'https://schema.org/SocialMediaPosting',
+                // protocol: dredditProtocol.protocol,
+                // protocolPath: EDredditTypes.POST,
+                schema: dredditProtocol.types.post.schema,
             }
         });
 
@@ -81,7 +59,9 @@ export default function App() {
         const { record: alicePost2Record } = await aliceStorage.web5.dwn.records.write({
             data: JSON.stringify(alicePost1),
             message: {
-                schema: 'https://schema.org/SocialMediaPosting',
+                // protocol: dredditProtocol.protocol,
+                // protocolPath: EDredditTypes.POST,
+                schema: dredditProtocol.types.post.schema,
             }
         });
 
@@ -101,7 +81,9 @@ export default function App() {
         const { record: bobPostRecord } = await bobStorage.web5.dwn.records.write({
             data: JSON.stringify(bobPost1),
             message: {
-                schema: 'https://schema.org/SocialMediaPosting',
+                // protocol: dredditProtocol.protocol,
+                // protocolPath: EDredditTypes.POST,
+                schema: dredditProtocol.types.post.schema,
             }
         });
 
@@ -121,7 +103,9 @@ export default function App() {
         const { record: bobPost2Record } = await bobStorage.web5.dwn.records.write({
             data: JSON.stringify(bobPost2),
             message: {
-                schema: 'https://schema.org/SocialMediaPosting',
+                // protocol: dredditProtocol.protocol,
+                // protocolPath: EDredditTypes.POST,
+                schema: dredditProtocol.types.post.schema,
             }
         });
 
@@ -141,12 +125,25 @@ export default function App() {
         const { record: bobPost3Record } = await bobStorage.web5.dwn.records.write({
             data: JSON.stringify(bobPost3),
             message: {
-                schema: 'https://schema.org/SocialMediaPosting',
+                // protocol: dredditProtocol.protocol,
+                // protocolPath: EDredditTypes.POST,
+                schema: dredditProtocol.types.post.schema,
             }
         });
 
         await bobPost3Record?.send(dredditStorage.did);
-        
+
+        const { records } = await dredditStorage.web5.dwn.records.query({
+            message: {
+                filter: {
+                    schema: dredditProtocol.types[EDredditTypes.POST].schema,
+                    dataFormat: "application/json",
+                },
+            },
+        });
+
+        console.log('records dreddit storage', records);
+
         return [
             {
                 ...alicePost1,
@@ -157,12 +154,12 @@ export default function App() {
                 author: {
                     id: alicePost1Record.author,
                 },
-            }, 
+            },
             {
                 ...bobPost1,
                 record: bobPostRecord,
                 id: bobPostRecord.id,
-                
+
                 dateCreated: bobPostRecord.dateCreated,
                 dateModified: bobPostRecord.dateModified,
                 author: {
@@ -178,12 +175,12 @@ export default function App() {
                 author: {
                     id: alicePost2Record.author,
                 },
-            }, 
+            },
             {
                 ...bobPost2,
                 record: bobPost2Record,
                 id: bobPost2Record.id,
-                
+
                 dateCreated: bobPost2Record.dateCreated,
                 dateModified: bobPost2Record.dateModified,
                 author: {
@@ -194,7 +191,7 @@ export default function App() {
                 ...bobPost3,
                 record: bobPost3Record,
                 id: bobPost3Record.id,
-                
+
                 dateCreated: bobPost3Record.dateCreated,
                 dateModified: bobPost3Record.dateModified,
                 author: {
@@ -211,12 +208,12 @@ export default function App() {
             const { web5, did: userDid } = await Web5.connect();
             const { web5: a5, did: aliceDid } = await Web5.connect();
             const { web5: b5, did: bobDid } = await Web5.connect();
-   
-            addToWeb5Storage('user', {did: userDid, web5});
-            addToWeb5Storage('alice', {did: aliceDid, web5: a5});
-            addToWeb5Storage('bob', {did: bobDid, web5: b5});
+
+            addToWeb5Storage('user', { did: userDid, web5 });
+            addToWeb5Storage('alice', { did: aliceDid, web5: a5 });
+            addToWeb5Storage('bob', { did: bobDid, web5: b5 });
         };
-        
+
         const getPosts = async () => {
             const userStorage = web5Storage?.get('user');
             const dredditDid = web5Storage.get('dreddit')?.did;
@@ -227,7 +224,7 @@ export default function App() {
                 from: dredditDid,
                 message: {
                     filter: {
-                        schema: 'https://schema.org/SocialMediaPosting',
+                        protocol: dredditProtocol.protocol,
                         dataFormat: "application/json",
                     },
                 },
@@ -237,10 +234,10 @@ export default function App() {
 
             if (records.length > 0) {
                 for await (const record of (records || [])) {
-                    const {data, author, id, dateCreated, dateModified} = record;
+                    const { data, author, id, dateCreated, dateModified } = record;
                     const transformedData = await data.json();
-                    
-                    console.log({data, transformedData});
+
+                    console.log({ data, transformedData });
 
                     newPosts.push({
                         ...transformedData,
@@ -252,7 +249,7 @@ export default function App() {
                             id: author,
                         },
                     });
-                }    
+                }
             } else {
                 newPosts = await createPosts() || [];
             }
@@ -262,16 +259,18 @@ export default function App() {
 
         const createDredditDWN = async () => {
             if (web5Storage.has('dreddit')) return;
-            
+
+            // { techPreview: { dwnEndpoints: ["http://localhost:3000"] } 
             const { web5, did } = await Web5.connect();
 
-            addToWeb5Storage('dreddit', {did, web5});
+            addToWeb5Storage('dreddit', { did, web5 });
         };
 
-        
         await createDredditDWN();
         await initConnection();
         await getPosts();
+
+        setIsLoading(false);
     }, [web5Storage, addToWeb5Storage]);
 
     useEffect(() => {
@@ -279,9 +278,16 @@ export default function App() {
     }, [init]);
 
     return (
-      <>
-            <NewPostButton />
-            <Feed />
+        <>
+            {isLoading
+                ? <Spinner />
+                : (
+                    <>
+                        <NewPostButton />
+                        <Feed />
+                    </>
+                )
+            }
         </>
-    )
+    );
 }

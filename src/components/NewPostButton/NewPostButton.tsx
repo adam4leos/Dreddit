@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import './NewPostButton.css';
+import './NewPostButton.scss';
 
 export const NewPostButton = () => {
     return (
