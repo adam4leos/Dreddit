@@ -46,7 +46,7 @@ interface IPostsContextProps {
     updatePost: (postID: string, changes: Partial<IPost>) => void;
     deletePost: (postID: string) => void;
     // TODO type for customStorageToWriteTo
-    createPost: (postDate: IPostData, customStorageToWriteTo?: any) => void;
+    createPost: (postDate: IPostData, customStorageToWriteTo?: any) => Promise<IPost>;
 }
 
 export const PostsContext = React.createContext<IPostsContextProps>({} as IPostsContextProps);

@@ -49,11 +49,12 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
   };
 
   // TODO type for storage (customStorageToWriteTo)
-  const createPost = async (postData: IPostData, customStorageToWriteTo?: any) => {
+  const createPost = async (postData: IPostData, customStorageToWriteTo?: any): Promise<IPost> => {
     const dredditStorage = web5Storage.get('dreddit');
     const userStorage = web5Storage.get('user');
     const storageToWriteTo = customStorageToWriteTo || userStorage;
 
+    // update user DWN
     const { record } = await storageToWriteTo.web5.dwn.records.write({
       data: JSON.stringify(postData),
       message: {
@@ -66,23 +67,23 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
     // update dreddit DWN
     await record?.send(dredditStorage?.did);
 
+    // update local state 
     const { data, author, id, dateCreated, dateModified } = record;
-      const transformedData = await data.json();
+    const transformedData = await data.json();
+    const newPost = {
+        ...transformedData,
+        record,
+        id,
+        dateCreated,
+        dateModified,
+        author: {
+            id: author,
+        },
+    };
 
-      console.log({ data, transformedData });
+    addPost(newPost);
 
-      const newPost = {
-          ...transformedData,
-          record,
-          id,
-          dateCreated,
-          dateModified,
-          author: {
-              id: author,
-          },
-      };
-
-      addPost(newPost);
+    return newPost;
   }
 
   const deletePost = (postID: string) => {

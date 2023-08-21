@@ -1,0 +1,145 @@
+.SubmitPost {
+  padding: 8px;
+  border-radius: 5px;
+
+  &__header {
+    font-size: 1.3rem;
+    color: #D7DADC;
+    border-bottom: 1px solid grey;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+
+  &__select {
+    width: 40%;
+    margin-bottom: 10px;
+
+    .react-select {
+      &__single-value,
+      &__placeholder {
+        color: #D7DADC;
+      }
+
+      &__control {
+        background-color: #1A1A1B;
+        border: 1px solid #343536;
+      }
+      
+      &__indicator-separator {
+        display: none;
+      }
+    }
+  }
+
+  &__creation-zone {
+    background-color: #1A1A1B;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+
+  &__type-choices {
+    display: flex;
+  }
+
+  &__type-btn {
+    font-size: 0.9rem;
+    font-weight: bold;
+    line-height: 18px;
+    outline: none;
+    padding: 15px 17px;
+    flex: 1;
+    text-align: center;
+    border: 1px solid #343536;
+    border-width: 0 1px 1px 0;
+    justify-content: center;
+    align-items: center;
+    color: #818384;
+    white-space: nowrap;
+    background-color: transparent;
+
+    &--active {
+      color: #D7DADC;
+      border-bottom: 3px solid #D7DADC;
+    }
+
+    &:hover:not([disabled]) {
+      color: #818384;
+      background-color: rgba(215,218,220,0.05);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: rgba(129,131,132,0.5)
+    }
+  }
+
+  &__content {
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    height: 40px;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+    border: 1px solid #343536;
+    color: #D7DADC;
+    caret-color: #D7DADC;
+    padding: 8px 68px 8px 16px;
+    background-color: transparent;
+    outline: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+
+    &:focus {
+      border-color: #D7DADC;
+    }
+  }
+
+  &__textarea {
+    background-color: #1A1A1B;
+    color: #D7DADC;
+    caret-color: #D7DADC;
+    border-radius: 4px;
+    min-height: 122px;
+    overflow: hidden;
+    padding: 8px 16px;
+    resize: vertical;
+    outline: none;
+
+    &:focus {
+      border-color: #D7DADC;
+    }
+  }
+
+  &__actions {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__action-btn {
+    font-weight: 700;
+    letter-spacing: unset;
+    line-height: 17px;
+    text-transform: unset;
+    min-height: 32px;
+    min-width: 32px;
+    padding: 4px 16px;
+    outline: none;
+    border: 1px solid #D7DADC;
+    border-radius: 50px;
+    color: #D7DADC;
+    background: transparent;
+
+    &:hover:not([disabled]) {
+      background-color: rgba(215,218,220,0.05);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background: rgba(129,131,132,0.5);
+    }
+  }
+}

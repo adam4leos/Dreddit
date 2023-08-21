@@ -1,8 +1,10 @@
 "use client"
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Select, { SingleValue } from 'react-select';
+import { useRouter } from 'next/navigation';
 
 import { EPostTypes, PostsContext } from "@/contexts/PostsContext";
+import './SubmitPost.scss';
 
 type TSubdredditSelectOption = {
     value: string;
@@ -20,10 +22,20 @@ const SubmitPost = () => {
     const [postType, setPostType] = useState(EPostTypes.POST);
     const [textareaValue, setTextareaValue] = useState('');
     const [postTitle, setPostTitle] = useState('');
+    const [isGoodToPost, setIsGoodToPost] = useState(false);
     const [selectedSubdreddit, setSelectedSubdreddit] = useState<TSubdredditSelectOption | null>(null);
     const { createPost } = useContext(PostsContext);
+    const router = useRouter();
 
-    const handlePostSubmit = () => {
+    useEffect(() => {
+        const isTitleValid = postTitle.length > 0;
+        const isCommunityChosen = selectedSubdreddit !== null;
+        const isContentValid = true; // TODO validate content, mostly media
+
+        setIsGoodToPost(isTitleValid && isCommunityChosen && isContentValid);
+    }, [postTitle, selectedSubdreddit]);
+
+    const handlePostSubmit = async () => {
         const newPostData = {
             title: postTitle,
             content: textareaValue, // TODO content of diffrent types
@@ -36,7 +48,16 @@ const SubmitPost = () => {
             },
         };
 
-        createPost(newPostData);
+        try {
+            const newPost = await createPost(newPostData);
+
+            console.log('New post:', newPost);
+
+            // TODO redirect to the post
+            router.push('/');
+        } catch (e) {
+            console.error((e as Error).message);
+        }
     }
 
     const handleCommunitySelectChange = (selectedOption: SingleValue<TSubdredditSelectOption | null>) => {
@@ -45,33 +66,57 @@ const SubmitPost = () => {
 
     return (
         <div className="SubmitPost" onSubmit={handlePostSubmit}>
-            <h4>Create Post</h4>
+            <h4 className="SubmitPost__header">Create Post</h4>
 
             <Select 
+                className="SubmitPost__select"
+                classNamePrefix="react-select"
                 options={sundredditSelectOptions} 
                 defaultValue={null} 
-                placeholder="Select a community"
+                placeholder="Choose a community"
                 onChange={handleCommunitySelectChange}
             />
 
             <div className="SubmitPost__creation-zone">
-                <div className="SubmitPost__creation-type-choice">
-                    <button onClick={() => setPostType(EPostTypes.POST)}>Post</button>
-                    <button onClick={() => setPostType(EPostTypes.POST)} disabled>Image & Video</button>
+                <div className="SubmitPost__type-choices">
+                    <button 
+                        className={`SubmitPost__type-btn ${postType === EPostTypes.POST && 'SubmitPost__type-btn--active'}`}
+                        onClick={() => setPostType(EPostTypes.POST)}
+                    >Post</button>
+                    <button 
+                        className={`SubmitPost__type-btn ${postType === EPostTypes.MEDIA && 'SubmitPost__type-btn--active'}`}
+                        onClick={() => setPostType(EPostTypes.MEDIA)} 
+                        disabled
+                    >Image & Video</button>
                 </div>
-                <input type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
-                {postType === EPostTypes.POST && (
-                    <textarea 
-                        className="SubmitPost__textarea" 
-                        placeholder="Write your post here" 
-                        value={textareaValue}
-                        onChange={(e) => setTextareaValue(e.target.value)}
+                <div className="SubmitPost__content">
+                    <input 
+                        className="SubmitPost__title"
+                        type="text" 
+                        value={postTitle} 
+                        placeholder="Title"
+                        onChange={(e) => setPostTitle(e.target.value)} 
                     />
-                )}
-                {postType === EPostTypes.MEDIA && (
-                    <input type="file" />
-                )}
-                <button className="SubmitPost__submit-btn" onClick={handlePostSubmit}>Post</button>
+                    {postType === EPostTypes.POST && (
+                        <textarea 
+                            className="SubmitPost__textarea" 
+                            placeholder="Text (optional)" 
+                            value={textareaValue}
+                            onChange={(e) => setTextareaValue(e.target.value)}
+                        />
+                    )}
+                    {postType === EPostTypes.MEDIA && (
+                        <input type="file" />
+                    )}
+                </div>
+                
+                <div className="SubmitPost__actions">
+                    <button
+                        className="SubmitPost__action-btn SubmitPost__actin-btn--submit" 
+                        onClick={handlePostSubmit}
+                        disabled={!isGoodToPost}
+                    >Post</button>
+                </div>
             </div>
         </div>
     )

@@ -1,5 +1,5 @@
 "use client"
-import { Suspense, useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { Web5 } from '@tbd54566975/web5';
 
 import { Web5StorageContext } from "@/contexts/Web5StorageContext";
