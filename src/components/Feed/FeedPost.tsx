@@ -8,7 +8,6 @@ import './FeedPost.scss';
 
 interface IFeedPostProps {
     post: IPost;
-
 };
 
 export const FeedPost = ({ post }: IFeedPostProps) => {
@@ -32,8 +31,6 @@ export const FeedPost = ({ post }: IFeedPostProps) => {
             updatePost(id, { rating: rating + change });
         }
     };
-
-    console.log({ record, id, title, content, author, subdreddit, dateCreated, commentCount, rating });
 
     return (
         <>

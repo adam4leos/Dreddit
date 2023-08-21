@@ -3,7 +3,7 @@ import { Suspense, useCallback, useContext, useEffect, useState } from "react"
 import { Web5 } from '@tbd54566975/web5';
 
 import { Web5StorageContext } from "@/contexts/Web5StorageContext";
-import { PostsContext } from "@/contexts/PostsContext";
+import { EPostTypes, PostsContext } from "@/contexts/PostsContext";
 import { Feed } from "@/components/Feed/Feed";
 import { NewPostButton } from "@/components/NewPostButton/NewPostButton";
 import { dredditProtocol, EDredditTypes } from "@/protocol";
@@ -11,10 +11,10 @@ import { Spinner } from "@/components/Spinner/Spinner";
 
 export default function App() {
     const { web5Storage, addToWeb5Storage } = useContext(Web5StorageContext);
-    const { posts, addPost } = useContext(PostsContext);
+    const { posts, addPost, createPost } = useContext(PostsContext);
     const [isLoading, setIsLoading] = useState(true);
 
-    const createPosts = async () => {
+    const mockPosts = async () => {
         const aliceStorage = web5Storage?.get('alice');
         const bobStorage = web5Storage?.get('bob');
         const dredditStorage = web5Storage?.get('dreddit');
@@ -24,7 +24,7 @@ export default function App() {
         const alicePost1 = {
             title: "Alice's FIRST POST!",
             content: "Alice's first post! It's a great post!",
-            contentType: 'text',
+            contentType: EPostTypes.POST,
             commentCount: 0,
             rating: 0,
             subdreddit: {
@@ -32,22 +32,10 @@ export default function App() {
                 title: 'dr/All',
             },
         };
-
-        const { record: alicePost1Record } = await aliceStorage.web5.dwn.records.write({
-            data: JSON.stringify(alicePost1),
-            message: {
-                // protocol: dredditProtocol.protocol,
-                // protocolPath: EDredditTypes.POST,
-                schema: dredditProtocol.types.post.schema,
-            }
-        });
-
-        await alicePost1Record?.send(dredditStorage.did);
-
         const alicePost2 = {
             title: "How about another post?..",
             content: "Another post from Alice... Yey...",
-            contentType: 'text',
+            contentType: EPostTypes.POST,
             commentCount: 0,
             rating: 0,
             subdreddit: {
@@ -55,22 +43,10 @@ export default function App() {
                 title: 'dr/All',
             },
         };
-
-        const { record: alicePost2Record } = await aliceStorage.web5.dwn.records.write({
-            data: JSON.stringify(alicePost1),
-            message: {
-                // protocol: dredditProtocol.protocol,
-                // protocolPath: EDredditTypes.POST,
-                schema: dredditProtocol.types.post.schema,
-            }
-        });
-
-        await alicePost2Record?.send(dredditStorage.did);
-
         const bobPost1 = {
             title: "What about cats?!?!",
             content: "I LOVE CATS!",
-            contentType: 'text',
+            contentType: EPostTypes.POST,
             commentCount: 0,
             rating: 0,
             subdreddit: {
@@ -78,21 +54,10 @@ export default function App() {
                 title: 'dr/Cats',
             },
         };
-        const { record: bobPostRecord } = await bobStorage.web5.dwn.records.write({
-            data: JSON.stringify(bobPost1),
-            message: {
-                // protocol: dredditProtocol.protocol,
-                // protocolPath: EDredditTypes.POST,
-                schema: dredditProtocol.types.post.schema,
-            }
-        });
-
-        await bobPostRecord?.send(dredditStorage.did);
-
         const bobPost2 = {
             title: "Bob thinks Alice should stop spamming dr/All",
             content: "Alice cmon, this is not you personal blog! This is Dreddit!",
-            contentType: 'text',
+            contentType: EPostTypes.POST,
             commentCount: 0,
             rating: 0,
             subdreddit: {
@@ -100,21 +65,10 @@ export default function App() {
                 title: 'dr/All',
             },
         };
-        const { record: bobPost2Record } = await bobStorage.web5.dwn.records.write({
-            data: JSON.stringify(bobPost2),
-            message: {
-                // protocol: dredditProtocol.protocol,
-                // protocolPath: EDredditTypes.POST,
-                schema: dredditProtocol.types.post.schema,
-            }
-        });
-
-        await bobPost2Record?.send(dredditStorage.did);
-
         const bobPost3 = {
             title: "Let's talk decentralization!",
             content: "So happy I stumbled on this subdreddit! You folks are amazing! But I'd like to know more about how you're going to achive your goals!",
-            contentType: 'text',
+            contentType: EPostTypes.POST,
             commentCount: 0,
             rating: 0,
             subdreddit: {
@@ -122,83 +76,12 @@ export default function App() {
                 title: 'dr/TBD',
             },
         };
-        const { record: bobPost3Record } = await bobStorage.web5.dwn.records.write({
-            data: JSON.stringify(bobPost3),
-            message: {
-                // protocol: dredditProtocol.protocol,
-                // protocolPath: EDredditTypes.POST,
-                schema: dredditProtocol.types.post.schema,
-            }
-        });
 
-        await bobPost3Record?.send(dredditStorage.did);
-
-        const { records } = await dredditStorage.web5.dwn.records.query({
-            message: {
-                filter: {
-                    schema: dredditProtocol.types[EDredditTypes.POST].schema,
-                    dataFormat: "application/json",
-                },
-            },
-        });
-
-        console.log('records dreddit storage', records);
-
-        return [
-            {
-                ...alicePost1,
-                record: alicePost1Record,
-                id: alicePost1Record.id,
-                dateCreated: alicePost1Record.dateCreated,
-                dateModified: alicePost1Record.dateModified,
-                author: {
-                    id: alicePost1Record.author,
-                },
-            },
-            {
-                ...bobPost1,
-                record: bobPostRecord,
-                id: bobPostRecord.id,
-
-                dateCreated: bobPostRecord.dateCreated,
-                dateModified: bobPostRecord.dateModified,
-                author: {
-                    id: bobPostRecord.author,
-                },
-            },
-            {
-                ...alicePost2,
-                record: alicePost2Record,
-                id: alicePost2Record.id,
-                dateCreated: alicePost2Record.dateCreated,
-                dateModified: alicePost2Record.dateModified,
-                author: {
-                    id: alicePost2Record.author,
-                },
-            },
-            {
-                ...bobPost2,
-                record: bobPost2Record,
-                id: bobPost2Record.id,
-
-                dateCreated: bobPost2Record.dateCreated,
-                dateModified: bobPost2Record.dateModified,
-                author: {
-                    id: bobPost2Record.author,
-                },
-            },
-            {
-                ...bobPost3,
-                record: bobPost3Record,
-                id: bobPost3Record.id,
-
-                dateCreated: bobPost3Record.dateCreated,
-                dateModified: bobPost3Record.dateModified,
-                author: {
-                    id: bobPost3Record.author,
-                },
-            },
-        ];
+        await createPost(alicePost1, aliceStorage);
+        await createPost(alicePost2, aliceStorage);
+        await createPost(bobPost1, bobStorage);
+        await createPost(bobPost2, bobStorage);
+        await createPost(bobPost3, bobStorage);
     };
 
     const init = useCallback(async () => {
@@ -230,9 +113,10 @@ export default function App() {
                 },
             });
 
-            let newPosts = [];
+            if (records.length === 0) mockPosts();
+            else {
+                const newPosts = [];
 
-            if (records.length > 0) {
                 for await (const record of (records || [])) {
                     const { data, author, id, dateCreated, dateModified } = record;
                     const transformedData = await data.json();
@@ -250,11 +134,9 @@ export default function App() {
                         },
                     });
                 }
-            } else {
-                newPosts = await createPosts() || [];
-            }
 
-            newPosts.forEach(addPost);
+                newPosts.forEach(addPost);
+            }
         }
 
         const createDredditDWN = async () => {

@@ -1,16 +1,16 @@
 "use client"
 import { useContext, useState } from "react";
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 
-import { PostsContext } from "@/contexts/PostsContext";
+import { EPostTypes, PostsContext } from "@/contexts/PostsContext";
 
-enum EPostTypes {
-    POST = 'post',
-    MEDIA = 'media',
-    LINK = 'link',
+type TSubdredditSelectOption = {
+    value: string;
+    label: string;
 }
 
-const sundredditSelectOptions = [
+// TODO - fetch them from dreddit DWN, I guess
+const sundredditSelectOptions: TSubdredditSelectOption[] = [
     { value: '1', label: 'All' },
     { value: '2', label: 'Cats' },
     { value: '3', label: 'TBD' },
@@ -19,14 +19,28 @@ const sundredditSelectOptions = [
 const SubmitPost = () => {
     const [postType, setPostType] = useState(EPostTypes.POST);
     const [textareaValue, setTextareaValue] = useState('');
-    const { addPost } = useContext(PostsContext);
+    const [postTitle, setPostTitle] = useState('');
+    const [selectedSubdreddit, setSelectedSubdreddit] = useState<TSubdredditSelectOption | null>(null);
+    const { createPost } = useContext(PostsContext);
 
     const handlePostSubmit = () => {
-        // addPost();
+        const newPostData = {
+            title: postTitle,
+            content: textareaValue, // TODO content of diffrent types
+            contentType: postType,
+            commentCount: 0,
+            rating: 0,
+            subdreddit: {
+                id: selectedSubdreddit?.value || '1',
+                title: `dr/${selectedSubdreddit?.label}`,
+            },
+        };
+
+        createPost(newPostData);
     }
 
-    const handleCommunitySelectChange = (selectedOption: unknown) => {
-        console.log(selectedOption);
+    const handleCommunitySelectChange = (selectedOption: SingleValue<TSubdredditSelectOption | null>) => {
+        setSelectedSubdreddit(selectedOption);
     }
 
     return (
@@ -42,9 +56,10 @@ const SubmitPost = () => {
 
             <div className="SubmitPost__creation-zone">
                 <div className="SubmitPost__creation-type-choice">
-                    <button>Post</button>
-                    <button disabled>Image & Video</button>
+                    <button onClick={() => setPostType(EPostTypes.POST)}>Post</button>
+                    <button onClick={() => setPostType(EPostTypes.POST)} disabled>Image & Video</button>
                 </div>
+                <input type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
                 {postType === EPostTypes.POST && (
                     <textarea 
                         className="SubmitPost__textarea" 
@@ -56,7 +71,7 @@ const SubmitPost = () => {
                 {postType === EPostTypes.MEDIA && (
                     <input type="file" />
                 )}
-                <button className="SubmitPost__submit-btn">Post</button>
+                <button className="SubmitPost__submit-btn" onClick={handlePostSubmit}>Post</button>
             </div>
         </div>
     )

@@ -1,10 +1,16 @@
 import React from 'react';
 
+export enum EPostTypes {
+    POST = 'post',
+    MEDIA = 'media',
+    LINK = 'link',
+}
+
 export interface IPostData {
     title: string;
     content: string;
     contentHref?: URL;
-    contentType: 'text' | 'img';
+    contentType: EPostTypes;
     commentCount: number;
     rating: number;
     subdreddit: {
@@ -39,6 +45,8 @@ interface IPostsContextProps {
     addPost: (post: IPost) => void;
     updatePost: (postID: string, changes: Partial<IPost>) => void;
     deletePost: (postID: string) => void;
+    // TODO type for customStorageToWriteTo
+    createPost: (postDate: IPostData, customStorageToWriteTo?: any) => void;
 }
 
 export const PostsContext = React.createContext<IPostsContextProps>({} as IPostsContextProps);
