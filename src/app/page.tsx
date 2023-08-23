@@ -39,7 +39,7 @@ export default function App() {
             content: "Another post from Alice... Yey...",
             contentType: EPostTypes.POST,
             commentCount: 0,
-            rating: 0,
+            rating: -2,
             subdreddit: {
                 id: '1',
                 slug: 'All',
@@ -50,7 +50,7 @@ export default function App() {
             content: "I LOVE CATS!",
             contentType: EPostTypes.POST,
             commentCount: 0,
-            rating: 0,
+            rating: 9999,
             subdreddit: {
                 id: '2',
                 slug: 'Cats',
@@ -61,7 +61,7 @@ export default function App() {
             content: "Alice cmon, this is not you personal blog! This is Dreddit!",
             contentType: EPostTypes.POST,
             commentCount: 0,
-            rating: 0,
+            rating: 1,
             subdreddit: {
                 id: '1',
                 slug: 'All',
@@ -72,7 +72,7 @@ export default function App() {
             content: "So happy I stumbled on this subdreddit! You folks are amazing! But I'd like to know more about how you're going to achive your goals!",
             contentType: EPostTypes.POST,
             commentCount: 0,
-            rating: 0,
+            rating: 69,
             subdreddit: {
                 id: '3',
                 slug: 'TBD',

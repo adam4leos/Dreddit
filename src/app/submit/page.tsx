@@ -51,8 +51,7 @@ const SubmitPost = () => {
         try {
             const newPost = await createPost(newPostData);
 
-            // TODO redirect to the post
-            router.push('/');
+            router.push(`/posts/${newPost.id}`);
         } catch (e) {
             console.error((e as Error).message);
         }

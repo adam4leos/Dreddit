@@ -1,7 +1,7 @@
 'use client';
 import { useContext } from "react";
 
-import { FeedPost } from "@/components/FeedPost/FeedPost";
+import { Post } from "@/components/Post/Post";
 import { PostsContext } from "@/contexts/PostsContext";
 
 
@@ -11,7 +11,7 @@ const PostPage = ({ params }: { params: { slug: string }}) => {
   
   return (
     <div>
-      {post ? <FeedPost post={post} /> : 'Not found' }
+      {post ? <Post post={post} /> : 'Not found' }
     </div>
   );
 }
