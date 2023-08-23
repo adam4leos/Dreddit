@@ -8,10 +8,10 @@ import './Post.scss';
 
 interface IPostProps {
     post: IPost;
-    isMainFeedPost?: boolean;
+    isStandalone?: boolean;
 };
 
-export const Post = ({ post, isMainFeedPost }: IPostProps) => {
+export const Post = ({ post, isStandalone }: IPostProps) => {
     const { record, id, title, content, author, subdreddit, dateCreated, commentCount, rating, contentType } = post;
     const { updatePost } = useContext(PostsContext);
 
@@ -61,7 +61,7 @@ export const Post = ({ post, isMainFeedPost }: IPostProps) => {
         <div className="Post">
                 {getFeedPostHead()}
                 <div className="Post__body">
-                    <h4 className="Post__title">{title}</h4>
+                    <h4 className={`Post__title ${isStandalone && 'Post__title--standalone'}`}>{title}</h4>
                     <div className="Post__content">{content}</div>
                 </div>
                 <div className="Post__footer">

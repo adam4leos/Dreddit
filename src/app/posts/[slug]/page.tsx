@@ -11,7 +11,7 @@ const PostPage = ({ params }: { params: { slug: string }}) => {
   
   return (
     <div>
-      {post ? <Post post={post} /> : 'Not found' }
+      {post ? <Post post={post} isStandalone={true} /> : 'Not found' }
     </div>
   );
 }

@@ -8,7 +8,7 @@ export const MainFeed = () => {
 
     return (
         <div className="Feed">
-            {posts.map(post => <FeedPost key={post.id} post={post} isMainFeedPost={true} />)}
+            {posts.map(post => <FeedPost key={post.id} post={post} />)}
         </div>
     );
 }
