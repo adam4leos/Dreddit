@@ -1,0 +1,43 @@
+.Comments {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 0;
+
+  &__head {
+    display: flex;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+  }
+
+  &__sort-by {
+    margin-right: 10px;
+  }
+
+  &__head-separator {
+    border-color: rgba(255,255,255,0.1);
+    flex-grow: 1;
+  }
+
+  &__head-count {
+    margin-left: 10px;
+  }
+
+  &__add-btn {
+    background-color: transparent;
+    border: 1px solid grey;
+    border-radius: 999px;
+    width: 160px;
+    padding: 10px;
+    color: #f2f2f2;
+    font-size: 1rem;
+    margin-bottom: 30px;
+    
+    &:hover {
+      border-color: #fff;
+    }
+  }
+
+  &__body {
+    min-height: 1500px; /* TODO remove later - to simulate scroll */
+  }
+}

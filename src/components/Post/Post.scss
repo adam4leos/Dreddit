@@ -6,6 +6,7 @@
 
         &--standalone {
             font-size: 2rem;
+            padding-bottom: 10px;
         }
     }
 
@@ -24,12 +25,12 @@
 
     &__subdreddit-icon {
         display: inline-block;
-        width: 26px;
-        height: 26px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         background: #f2f2f2;
         text-align: center;
-        line-height: 26px;
+        line-height: 30px;
         margin-right: 10px;
     }
 
@@ -39,7 +40,7 @@
     }
 
     &__author {
-        opacity: 0.9;
+        // TODO lighter color than subdreddit
     }
 
     &__subdreddit-title {
@@ -73,6 +74,10 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+
+        &--standalone {
+            padding-top: 20px;
+        }
     }
 
     &__footer-btn {
