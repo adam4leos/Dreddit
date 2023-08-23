@@ -16,13 +16,25 @@
 
     .react-select {
       &__single-value,
-      &__placeholder {
+      &__placeholder,
+      &__menu {
         color: #D7DADC;
+        background-color: #1A1A1B;
+      }
+
+      &__option {
+        cursor: pointer;
+
+        &--is-focused,
+        &--is-selected {
+          background-color: #343536;
+        }
       }
 
       &__control {
         background-color: #1A1A1B;
         border: 1px solid #343536;
+        cursor: pointer;
       }
       
       &__indicator-separator {
