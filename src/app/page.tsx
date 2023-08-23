@@ -4,7 +4,7 @@ import { Web5 } from '@tbd54566975/web5';
 
 import { Web5StorageContext } from "@/contexts/Web5StorageContext";
 import { EPostTypes, PostsContext } from "@/contexts/PostsContext";
-import { Feed } from "@/components/Feed/Feed";
+import { MainFeed } from "@/components/MainFeed/MainFeed";
 import { NewPostButton } from "@/components/NewPostButton/NewPostButton";
 import { dredditProtocol, EDredditTypes } from "@/protocol";
 import { Spinner } from "@/components/Spinner/Spinner";
@@ -21,6 +21,8 @@ export default function App() {
 
         if (!aliceStorage || !bobStorage || !dredditStorage) return;
 
+        console.log({aliceStorage, bobStorage, dredditStorage});
+
         const alicePost1 = {
             title: "Alice's FIRST POST!",
             content: "Alice's first post! It's a great post!",
@@ -29,7 +31,7 @@ export default function App() {
             rating: 0,
             subdreddit: {
                 id: '1',
-                title: 'dr/All',
+                slug: 'All',
             },
         };
         const alicePost2 = {
@@ -40,7 +42,7 @@ export default function App() {
             rating: 0,
             subdreddit: {
                 id: '1',
-                title: 'dr/All',
+                slug: 'All',
             },
         };
         const bobPost1 = {
@@ -51,7 +53,7 @@ export default function App() {
             rating: 0,
             subdreddit: {
                 id: '2',
-                title: 'dr/Cats',
+                slug: 'Cats',
             },
         };
         const bobPost2 = {
@@ -62,7 +64,7 @@ export default function App() {
             rating: 0,
             subdreddit: {
                 id: '1',
-                title: 'dr/All',
+                slug: 'All',
             },
         };
         const bobPost3 = {
@@ -73,7 +75,7 @@ export default function App() {
             rating: 0,
             subdreddit: {
                 id: '3',
-                title: 'dr/TBD',
+                slug: 'TBD',
             },
         };
 
@@ -91,6 +93,8 @@ export default function App() {
             const { web5, did: userDid } = await Web5.connect();
             const { web5: a5, did: aliceDid } = await Web5.connect();
             const { web5: b5, did: bobDid } = await Web5.connect();
+
+            console.log({ userDid, aliceDid, bobDid });
 
             addToWeb5Storage('user', { did: userDid, web5 });
             addToWeb5Storage('alice', { did: aliceDid, web5: a5 });
@@ -166,7 +170,7 @@ export default function App() {
                 : (
                     <>
                         <NewPostButton />
-                        <Feed />
+                        <MainFeed />
                     </>
                 )
             }

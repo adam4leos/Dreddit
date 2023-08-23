@@ -8,9 +8,10 @@ import './FeedPost.scss';
 
 interface IFeedPostProps {
     post: IPost;
+    isMainFeedPost?: boolean;
 };
 
-export const FeedPost = ({ post }: IFeedPostProps) => {
+export const FeedPost = ({ post, isMainFeedPost }: IFeedPostProps) => {
     const { record, id, title, content, author, subdreddit, dateCreated, commentCount, rating, contentType } = post;
     const { updatePost } = useContext(PostsContext);
 
@@ -31,15 +32,27 @@ export const FeedPost = ({ post }: IFeedPostProps) => {
             updatePost(id, { rating: rating + change });
         }
     };
+    console.log('POST: ', post);
+    const getFeedPostHeadAuthor = () => {
+        const authorRef = {
+            link: isMainFeedPost ? `/dr/${encodeURIComponent(subdreddit.slug)}` : `/u/${encodeURIComponent(author.id)}`,
+            icon: isMainFeedPost ? subdreddit.slug.slice(0, 1) : author.id.slice(-1), // TODO support icons
+            title:  isMainFeedPost ? `dr/${subdreddit.slug}` : `u/${author.id.slice(-10)}`, // TODO suppoer user name if it'll appear
+        };
+
+        return (
+            <Link href={authorRef.link} className="FeedPost__subdreddit-link">
+                <span className="FeedPost__subdreddit-icon">{authorRef.icon}</span>
+                <span className="FeedPost__subdreddit-title">{authorRef.title}</span>
+            </Link>
+        )
+    }
 
     return (
         <>
-            <Link href={`/dr/${encodeURIComponent(subdreddit.id)}/comments/${encodeURIComponent(id)}`} className="FeedPost">
+            <Link href={`/posts/${encodeURIComponent(id)}`} className="FeedPost">
                 <div className="FeedPost__head">
-                    <Link href={`/dr/${encodeURIComponent(subdreddit.id)}`} className="FeedPost__subdreddit-link">
-                        <span className="FeedPost__subdreddit-icon">{subdreddit.title.slice(3, 4)}</span>
-                        <span className="FeedPost__subdreddit-title">{subdreddit.title}</span>
-                    </Link>
+                    {getFeedPostHeadAuthor()}
                     <span className="FeedPost__subreddit-link-separator">•</span>
                     <span className="FeedPost__stamp">{getPostedTime(dateCreated)} ago</span>
                 </div>
@@ -48,7 +61,7 @@ export const FeedPost = ({ post }: IFeedPostProps) => {
                     <div className="FeedPost__content">{content}</div>
                 </div>
                 <div className="FeedPost__footer">
-                    <button className="FeedPost__footer-btn">
+                    <button className="FeedPost__footer-btn FeedPost__footer-btn--rating">
                         <svg className="FeedPost__footer-icon FeedPost__footer-icon--rating" onClick={() => handleRatingChange(1)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" height="16" width="16" icon-name="upvote-outline" fill="currentColor"><g clipPath="url(#clip0_472_1110)"><path d="M12.877 19H7.123A1.125 1.125 0 016 17.877V11H2.126a1.114 1.114 0 01-1.007-.7 1.249 1.249 0 01.171-1.343L9.166.368a1.128 1.128 0 011.668.004l7.872 8.581a1.252 1.252 0 01.176 1.348 1.114 1.114 0 01-1.005.7H14v6.877A1.125 1.125 0 0112.877 19zM7.25 17.75h5.5v-8h4.934L10 1.31 2.258 9.75H7.25v8zM2.227 9.784l-.012.016c.01-.006.014-.01.012-.016z"></path></g><defs><clipPath id="clip0_472_1110"><path d="M0 0h20v20H0z"></path></clipPath></defs></svg>
                         <span className="FeedPost__rating">{rating}</span>
                         <svg className="FeedPost__footer-icon FeedPost__footer-icon--rating" onClick={() => handleRatingChange(-1)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" height="16" width="16" icon-name="downvote-outline" fill="currentColor"><g clipPath="url(#clip0_472_1137)"><path d="M10 20a1.122 1.122 0 01-.834-.372l-7.872-8.581A1.251 1.251 0 011.118 9.7 1.114 1.114 0 012.123 9H6V2.123A1.125 1.125 0 017.123 1h5.754A1.125 1.125 0 0114 2.123V9h3.874a1.114 1.114 0 011.007.7 1.25 1.25 0 01-.171 1.345l-7.876 8.589A1.128 1.128 0 0110 20zm-7.684-9.75L10 18.69l7.74-8.44h-4.99v-8h-5.5v8H2.316zm15.469-.05c-.01 0-.014.007-.012.013l.012-.013z"></path></g><defs><clipPath id="clip0_472_1137"><path d="M0 0h20v20H0z"></path></clipPath></defs></svg>

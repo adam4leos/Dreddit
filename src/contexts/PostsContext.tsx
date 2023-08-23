@@ -15,7 +15,7 @@ export interface IPostData {
     rating: number;
     subdreddit: {
         id: string;
-        title: string;
+        slug: string;
     }
 }
 

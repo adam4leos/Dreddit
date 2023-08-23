@@ -20,7 +20,7 @@ const OFFLINE_DEFAULT_POSTS = [
       },
       subdreddit: {
           id: '1',
-          title: 'dr/All',
+          slug: 'All',
       },
   }, 
   {
@@ -34,7 +34,7 @@ const OFFLINE_DEFAULT_POSTS = [
       },
       subdreddit: {
           id: '1',
-          title: 'dr/All',
+          slug: 'All',
       },
   },
 ];
@@ -80,6 +80,8 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
             id: author,
         },
     };
+
+    console.log('CREATION', {newPost, postData});
 
     addPost(newPost);
 

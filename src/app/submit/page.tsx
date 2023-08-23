@@ -44,14 +44,12 @@ const SubmitPost = () => {
             rating: 0,
             subdreddit: {
                 id: selectedSubdreddit?.value || '1',
-                title: `dr/${selectedSubdreddit?.label}`,
+                slug: selectedSubdreddit?.label || 'All',
             },
         };
 
         try {
             const newPost = await createPost(newPostData);
-
-            console.log('New post:', newPost);
 
             // TODO redirect to the post
             router.push('/');

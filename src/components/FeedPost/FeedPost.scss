@@ -89,6 +89,12 @@
         &:hover {
             background-color: #24353b;
         }
+
+        &--rating {
+            &:hover {
+                background-color: #1A282D;
+            }
+        }
     }
 
     &__footer-icon {
