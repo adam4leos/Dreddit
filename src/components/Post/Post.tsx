@@ -34,28 +34,32 @@ export const Post = ({ post, isMainFeedPost }: IPostProps) => {
             updatePost(id, { rating: rating + change });
         }
     };
-    const getFeedPostHeadAuthor = () => {
-        const authorRef = {
-            link: isMainFeedPost ? `/dr/${encodeURIComponent(subdreddit.slug)}` : `/u/${encodeURIComponent(author.id)}`,
-            icon: isMainFeedPost ? subdreddit.slug.slice(0, 1) : author.id.slice(-1), // TODO support icons
-            title:  isMainFeedPost ? `dr/${subdreddit.slug}` : `u/${author.id.slice(-10)}`, // TODO suppoer user name if it'll appear
-        };
-
+    const getFeedPostHead = () => {
+        // TODO support real icons
+        // TODO support real name if it'll appear
+        // TODO user profile link
         return (
-            <Link href={authorRef.link} className="Post__subdreddit-link">
-                <span className="Post__subdreddit-icon">{authorRef.icon}</span>
-                <span className="Post__subdreddit-title">{authorRef.title}</span>
-            </Link>
+          <div className="Post__head">
+           <Link href={`/dr/${encodeURIComponent(subdreddit.slug)}`} className="Post__subdreddit-link">
+              <span className="Post__subdreddit-icon">{ subdreddit.slug.slice(0, 1)}</span>
+            </Link>  
+            <div className="Post__head-metadata">
+              <Link href={`/dr/${encodeURIComponent(subdreddit.slug)}`} className="Post__subdreddit-link">
+                <span className="Post__subdreddit-title">dr/{subdreddit.slug}</span>
+              </Link>
+              <span className="Post__subreddit-link-separator">•</span>
+              <span className="Post__stamp">{getPostedTime(dateCreated)} ago</span>
+              <Link href="#" className="Post__subdreddit-link Post__subdreddit-link--author">
+                by <span className="Post__author">{`u/${author.id.slice(-10)}`}</span>
+              </Link>
+            </div>
+          </div>
         )
     }
 
     return (
         <div className="Post">
-                <div className="Post__head">
-                    {getFeedPostHeadAuthor()}
-                    <span className="Post__subreddit-link-separator">•</span>
-                    <span className="Post__stamp">{getPostedTime(dateCreated)} ago</span>
-                </div>
+                {getFeedPostHead()}
                 <div className="Post__body">
                     <h4 className="Post__title">{title}</h4>
                     <div className="Post__content">{content}</div>

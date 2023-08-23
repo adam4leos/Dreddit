@@ -10,6 +10,12 @@
         display: flex;
         align-items: center;
         font-size: 0.85rem;
+        color: #B8C5C9;
+    }
+
+    &__head-metadata {
+        display: flex;
+        flex-wrap: wrap;
     }
 
     &__subdreddit-icon {
@@ -24,19 +30,29 @@
     }
 
     &__subreddit-link-separator {
-        font-size: 8px;
-        margin: 0 8px;
+        font-size: 0.6rem;
+        margin: 2px 8px;
+    }
+
+    &__author {
+        opacity: 0.9;
     }
 
     &__subdreddit-title {
-        color: #B8C5C9;
+        font-weight: bold;
     }
 
     &__subdreddit-link {
         &:hover {
-            .Post__subdreddit-title {
+            .Post__subdreddit-title,
+            .Post__author {
                 color: #A7CCFF;
             }
+        }
+
+        &--author {
+            width: 100%;
+            margin-top: 2px;
         }
     }
 

@@ -50,7 +50,6 @@ const SubmitPost = () => {
 
         try {
             const newPost = await createPost(newPostData);
-
             router.push(`/posts/${newPost.id}`);
         } catch (e) {
             console.error((e as Error).message);
