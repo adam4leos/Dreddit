@@ -1,9 +1,10 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Link from 'next/link';
 
 import { IPost, PostsContext } from "@/contexts/PostsContext";
 import { timeSince } from "@/utils/timeSince";
 import { formatNumber } from "@/utils/formatNumber";
+import { copyUrl } from "@/utils/copyUrl";
 
 import './Post.scss';
 
@@ -16,6 +17,7 @@ interface IPostProps {
 export const Post = ({ post, isStandalone, commentsRef }: IPostProps) => {
     const { record, id, title, content, author, subdreddit, dateCreated, commentCount, rating, contentType } = post;
     const { updatePost } = useContext(PostsContext);
+    const [isShareOptionsVisible, setIsShareOptionsVisible] = useState(false);
 
     const getPostedTime = (postCreationISO: string) => timeSince(new Date(postCreationISO));
     // TODO better author title, name maybe?
@@ -61,9 +63,13 @@ export const Post = ({ post, isStandalone, commentsRef }: IPostProps) => {
     }
     const handleCommentsBtnClick = () => {
         if (isStandalone && commentsRef && commentsRef.current) {
-            // TODO header covers a bit of components afater scroll
+            // TODO header covers a bit of components after scroll
             commentsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+    }
+    const handleCopyBtnClick = () => {
+        copyUrl();
+        setIsShareOptionsVisible(false);
     }
 
     return (
@@ -83,10 +89,15 @@ export const Post = ({ post, isStandalone, commentsRef }: IPostProps) => {
                         <svg className="Post__footer-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" height="20" width="20" icon-name="comment-outline" fill="currentColor"><path d="M7.725 19.872a.718.718 0 01-.607-.328.725.725 0 01-.118-.397V16H3.625A2.63 2.63 0 011 13.375v-9.75A2.629 2.629 0 013.625 1h12.75A2.63 2.63 0 0119 3.625v9.75A2.63 2.63 0 0116.375 16h-4.161l-4 3.681a.725.725 0 01-.489.191zM3.625 2.25A1.377 1.377 0 002.25 3.625v9.75a1.377 1.377 0 001.375 1.375h4a.625.625 0 01.625.625v2.575l3.3-3.035a.628.628 0 01.424-.165h4.4a1.377 1.377 0 001.375-1.375v-9.75a1.377 1.377 0 00-1.374-1.375H3.625z"></path></svg>
                         {formatNumber(commentCount)}
                     </button>
-                    <button className="Post__footer-btn">
+                    <button className="Post__footer-btn" onClick={() => setIsShareOptionsVisible(!isShareOptionsVisible)}>
                         <svg className="Post__footer-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" height="20" width="20" icon-name="share-ios-outline" fill="currentColor"><path d="M19 11v5.378A2.625 2.625 0 0116.378 19H3.622A2.625 2.625 0 011 16.378V11h1.25v5.378a1.373 1.373 0 001.372 1.372h12.756a1.373 1.373 0 001.372-1.372V11H19zM9.375 3.009V14h1.25V3.009l2.933 2.933.884-.884-4-4a.624.624 0 00-.884 0l-4 4 .884.884 2.933-2.933z"></path></svg>
                         Share
                     </button>
+                    {isShareOptionsVisible && (
+                        <div className="Post__sharing-options">
+                            <button onClick={handleCopyBtnClick} className="Post__sharing-option">Copy Link</button>
+                        </div>
+                    )}
                 </div>
         </div>
     );
