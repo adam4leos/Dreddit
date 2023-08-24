@@ -66,14 +66,10 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
     return record;
   }
 
-  // TODO type for storage (customStorageToWriteTo)
-  const createPost = async (postData: IPostData, customStorageToWriteTo?: any): Promise<IPost> => {
-    const storageToWriteTo = customStorageToWriteTo || userStorage;
-    const mediaRecord = postData.contentType === EPostTypes.MEDIA ? await createMedia(postData.content) : null;
-
-    // update user DWN
-    const { record } = await storageToWriteTo.web5.dwn.records.write({
-      data: JSON.stringify({...postData, content: mediaRecord ? mediaRecord.id : postData.content}),
+  // TODO this is temporary to imitate other user's posts
+  const createInDredditDWN = async (postData: IPostData) => {
+    const { record } = await dredditStorage?.web5.dwn.records.write({
+      data: JSON.stringify(postData),
       message: {
           // protocol: dredditProtocol.protocol,
           // protocolPath: EDredditTypes.POST,
@@ -82,28 +78,52 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
       }
     });
 
-    // update dreddit DWN
-    await record?.send(dredditStorage?.did);
+    return record;
+  }
+
+  const createRecord = async (postData: IPostData) => {
+      // update user DWN
+      const { record } = await userStorage?.web5.dwn.records.write({
+        data: JSON.stringify(postData),
+        message: {
+            // protocol: dredditProtocol.protocol,
+            // protocolPath: EDredditTypes.POST,
+            schema: dredditProtocol.types.post.schema,
+            dataFormat: 'application/json',
+        }
+      });
+
+      // update dreddit DWN
+      await record?.send(dredditStorage?.did);
+
+      return record;
+  }
+
+  // TODO type for storage (customStorageToWriteTo)
+  const createPost = async (postData: IPostData, customAuthor: string): Promise<IPost> => {
+    const mediaRecord = postData.contentType === EPostTypes.MEDIA ? await createMedia(postData.content) : null;
+    const dataToPost = {...postData, content: mediaRecord ? mediaRecord.id : postData.content};
+    const postRecord = customAuthor ? await createInDredditDWN(dataToPost) : await createRecord(dataToPost);
 
     // update local state 
-    const { data, author, id, dateCreated, dateModified } = record;
+    const { data, author, id, dateCreated, dateModified } = postRecord;
     const transformedData = await data.json();
 
     console.log({transformedData, data});
 
     const newPost = {
         ...transformedData,
-        content: mediaRecord ? await mediaRecord.data.blob() : transformedData.content,
-        record,
         id,
         dateCreated,
         dateModified,
+        content: mediaRecord ? await mediaRecord.data.blob() : transformedData.content,
+        record: postRecord,
         author: {
-            id: author,
+            id: customAuthor || author,
         },
     };
 
-    console.log('CREATION', {newPost, postData});
+    console.log('CREATION RES: ', {newPost, postData});
 
     addPost(newPost);
 

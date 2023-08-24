@@ -15,11 +15,9 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true);
 
     const mockPosts = async () => {
-        const aliceStorage = web5Storage?.get('alice');
-        const bobStorage = web5Storage?.get('bob');
         const dredditStorage = web5Storage?.get('dreddit');
 
-        if (!aliceStorage || !bobStorage || !dredditStorage) return;
+        if (!dredditStorage) return;
 
         const alicePost1 = {
             title: "Alice's FIRST POST!",
@@ -77,11 +75,14 @@ export default function App() {
             },
         };
 
-        await createPost(alicePost1, aliceStorage);
-        await createPost(alicePost2, aliceStorage);
-        await createPost(bobPost1, bobStorage);
-        await createPost(bobPost2, bobStorage);
-        await createPost(bobPost3, bobStorage);
+        const {id: aliseDid} = await Web5.did.create('ion');
+        const {id: bobDid} = await Web5.did.create('ion');
+
+        await createPost(alicePost1, aliseDid);
+        await createPost(alicePost2, aliseDid);
+        await createPost(bobPost1, bobDid);
+        await createPost(bobPost2, bobDid);
+        await createPost(bobPost3, bobDid);
     };
 
     const init = useCallback(async () => {
@@ -89,14 +90,7 @@ export default function App() {
             if (web5Storage.has('user')) return;
 
             const { web5, did: userDid } = await Web5.connect();
-            const { web5: a5, did: aliceDid } = await Web5.connect();
-            const { web5: b5, did: bobDid } = await Web5.connect();
-
-            console.log({ userDid, aliceDid, bobDid });
-
             addToWeb5Storage('user', { did: userDid, web5 });
-            addToWeb5Storage('alice', { did: aliceDid, web5: a5 });
-            addToWeb5Storage('bob', { did: bobDid, web5: b5 });
         };
 
         const getPosts = async () => {
