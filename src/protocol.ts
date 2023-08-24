@@ -1,6 +1,7 @@
 export enum EDredditTypes {
     POST = 'post',
     COMMENT = 'comment',
+    MEDIA = 'media',
 }
 
 export const dredditProtocol = {
@@ -17,6 +18,12 @@ export const dredditProtocol = {
             'dataFormats': [
                 'application/json'
             ]
+        },
+        [EDredditTypes.MEDIA]: {
+            'schema': 'https://schema.org/MediaObject',
+            // 'dataFormats': [
+            //     'application/json'
+            // ]
         },
     },
     'structure': {

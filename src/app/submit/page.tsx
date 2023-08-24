@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 import { EPostTypes, PostsContext } from "@/contexts/PostsContext";
 import './SubmitPost.scss';
+import { dredditProtocol } from "@/protocol";
+import { Web5StorageContext } from "@/contexts/Web5StorageContext";
 
 type TSubdredditSelectOption = {
     value: string;
@@ -22,23 +24,37 @@ const SubmitPost = () => {
     const [postType, setPostType] = useState(EPostTypes.POST);
     const [textareaValue, setTextareaValue] = useState('');
     const [postTitle, setPostTitle] = useState('');
+    const [uploadedFile, setUploadedFile] = useState<File>();
     const [isGoodToPost, setIsGoodToPost] = useState(false);
     const [selectedSubdreddit, setSelectedSubdreddit] = useState<TSubdredditSelectOption | null>(null);
     const { createPost } = useContext(PostsContext);
     const router = useRouter();
 
+
+    // TODO remove
+    const { web5Storage } = useContext(Web5StorageContext);
+ 
     useEffect(() => {
         const isTitleValid = postTitle.length > 0;
         const isCommunityChosen = selectedSubdreddit !== null;
-        const isContentValid = true; // TODO validate content, mostly media
+        const isContentValid = postType === EPostTypes.MEDIA ? uploadedFile !== undefined : true;
 
         setIsGoodToPost(isTitleValid && isCommunityChosen && isContentValid);
-    }, [postTitle, selectedSubdreddit]);
+    }, [postTitle, selectedSubdreddit, uploadedFile]);
 
     const handlePostSubmit = async () => {
+        let content: string | File;
+
+        console.log(uploadedFile);
+        if (postType === EPostTypes.POST) {
+            content = textareaValue;
+        } else {
+            content = uploadedFile as File;
+        }
+        
         const newPostData = {
+            content,
             title: postTitle,
-            content: textareaValue, // TODO content of diffrent types
             contentType: postType,
             commentCount: 0,
             rating: 0,
@@ -82,7 +98,6 @@ const SubmitPost = () => {
                     <button 
                         className={`SubmitPost__type-btn ${postType === EPostTypes.MEDIA && 'SubmitPost__type-btn--active'}`}
                         onClick={() => setPostType(EPostTypes.MEDIA)} 
-                        disabled
                     >Image & Video</button>
                 </div>
                 <div className="SubmitPost__content">
@@ -102,7 +117,7 @@ const SubmitPost = () => {
                         />
                     )}
                     {postType === EPostTypes.MEDIA && (
-                        <input type="file" />
+                        <input type="file" onChange={(e) => setUploadedFile(e.target.files[0])} />
                     )}
                 </div>
                 

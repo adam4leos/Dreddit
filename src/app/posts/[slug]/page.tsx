@@ -18,7 +18,7 @@ const PostPage = ({ params }: { params: { slug: string }}) => {
   return (
     <div>
       <Post post={post as IPost} isStandalone={true} commentsRef={commentsRef}  />
-      <Comments ref={commentsRef} postID={post.id} />
+      <Comments ref={commentsRef} />
     </div>
   );
 }

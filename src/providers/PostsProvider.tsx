@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, ReactNode, useContext } from 'react';
-import { PostsContext, IPost, IPostData } from '@/contexts/PostsContext';
+import { PostsContext, IPost, IPostData, EPostTypes } from '@/contexts/PostsContext';
 import { dredditProtocol } from '@/protocol';
 import { Web5StorageContext } from '@/contexts/Web5StorageContext';
 
@@ -43,24 +43,42 @@ const OFFLINE_DEFAULT_POSTS = [
 export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
   const { web5Storage } = useContext(Web5StorageContext);
   const [posts, setPosts] = useState<IPost[]>([]);
+  const dredditStorage = web5Storage.get('dreddit');
+  const userStorage = web5Storage.get('user');
 
   const addPost = (newPost: IPost) => {
     setPosts(prevPosts => [...prevPosts, newPost]);
   };
 
+  const createMedia = async (content) => {
+    const { record } = await userStorage?.web5.dwn.records.write({
+      data: content,
+      message: {
+          schema: dredditProtocol.types.media.schema,
+      }
+    });
+
+    // update dreddit DWN
+    await record?.send(dredditStorage?.did);
+
+    console.log('MEDIA RECORD:', record);
+
+    return record;
+  }
+
   // TODO type for storage (customStorageToWriteTo)
   const createPost = async (postData: IPostData, customStorageToWriteTo?: any): Promise<IPost> => {
-    const dredditStorage = web5Storage.get('dreddit');
-    const userStorage = web5Storage.get('user');
     const storageToWriteTo = customStorageToWriteTo || userStorage;
+    const mediaRecord = postData.contentType === EPostTypes.MEDIA ? await createMedia(postData.content) : null;
 
     // update user DWN
     const { record } = await storageToWriteTo.web5.dwn.records.write({
-      data: JSON.stringify(postData),
+      data: JSON.stringify({...postData, content: mediaRecord ? mediaRecord.id : postData.content}),
       message: {
           // protocol: dredditProtocol.protocol,
           // protocolPath: EDredditTypes.POST,
           schema: dredditProtocol.types.post.schema,
+          dataFormat: 'application/json',
       }
     });
 
@@ -70,8 +88,12 @@ export const PostsProvider: React.FC<IPostsProviderProps> = ({ children }) => {
     // update local state 
     const { data, author, id, dateCreated, dateModified } = record;
     const transformedData = await data.json();
+
+    console.log({transformedData, data});
+
     const newPost = {
         ...transformedData,
+        content: mediaRecord ? await mediaRecord.data.blob() : transformedData.content,
         record,
         id,
         dateCreated,

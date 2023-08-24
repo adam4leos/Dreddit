@@ -1,3 +1,4 @@
+'use client';
 import { useContext, useState } from "react";
 import Link from 'next/link';
 
@@ -7,6 +8,7 @@ import { formatNumber } from "@/utils/formatNumber";
 import { copyUrl } from "@/utils/copyUrl";
 
 import './Post.scss';
+import { PostContent } from "./PostContent";
 
 interface IPostProps {
     post: IPost;
@@ -72,12 +74,14 @@ export const Post = ({ post, isStandalone, commentsRef }: IPostProps) => {
         setIsShareOptionsVisible(false);
     }
 
+    console.log({content})
+
     return (
         <div className="Post">
                 {getFeedPostHead()}
                 <div className="Post__body">
                     <h4 className={`Post__title ${isStandalone && 'Post__title--standalone'}`}>{title}</h4>
-                    <div className="Post__content">{content}</div>
+                    <PostContent contentType={contentType} content={content}  />
                 </div>
                 <div className={`Post__footer ${isStandalone && 'Post__footer--standalone'}`}>
                     <button className="Post__footer-btn Post__footer-btn--rating">

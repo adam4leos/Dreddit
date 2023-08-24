@@ -21,8 +21,6 @@ export default function App() {
 
         if (!aliceStorage || !bobStorage || !dredditStorage) return;
 
-        console.log({aliceStorage, bobStorage, dredditStorage});
-
         const alicePost1 = {
             title: "Alice's FIRST POST!",
             content: "Alice's first post! It's a great post!",
@@ -112,7 +110,7 @@ export default function App() {
                 message: {
                     filter: {
                         protocol: dredditProtocol.protocol,
-                        dataFormat: "application/json",
+                        // dataFormat: "application/json",
                     },
                 },
             });
@@ -124,11 +122,27 @@ export default function App() {
                 for await (const record of (records || [])) {
                     const { data, author, id, dateCreated, dateModified } = record;
                     const transformedData = await data.json();
+                    let mediaRecord = null; 
 
-                    console.log({ data, transformedData });
+                    if (transformedData.contentType === EPostTypes.MEDIA) {
+                        const { records } = await userStorage.web5.dwn.records.query({
+                            from: dredditDid,
+                            message: {
+                                filter: {
+                                    // TODO consider another property for that, contentRef
+                                    recordId: transformedData.content,
+                                },
+                            },
+                        });
+
+                        console.log('MEDIA RECORD: ', records);
+
+                        mediaRecord = records[0];
+                    }
 
                     newPosts.push({
                         ...transformedData,
+                        content: mediaRecord ? await mediaRecord.data.blob() : transformedData.content,
                         record,
                         id,
                         dateCreated,
